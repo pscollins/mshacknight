@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Meta, title, CSS, favicons, etc. -->
+    {% include header.html %}
+  </head>
+  <body class="bs-docs-home leap-interactive" leap-disable-tap="true" leap-disable-hover="true">
+   
+    <a class="sr-only" href="#content">Skip to main content</a>
+
+    <!-- Docs master nav -->
+    <header class="navbar navbar-inverse navbar-fixed-top bs-docs-nav" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle leap-interactive" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="{{ page.base_url }}" class="navbar-brand leap-interactive">Leapstrap</a>
+    </div>
+    <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+      <ul class="nav navbar-nav">
+        <li{% if page.slug == "getting-started" %} class="active"{% endif %}>
+          <a class="leap-interactive" href="{{ page.base_url }}getting-started">Get Started</a>
+        </li>
+                <li{% if page.slug == "leap" %} class="active"{% endif %}>
+          <a class="leap-interactive" href="{{ page.base_url }}leap">Leap</a>
+        </li>
+        <li{% if page.slug == "basics" %} class="active"{% endif %}>
+          <a class="leap-interactive" href="{{ page.base_url }}basics">Basics</a>
+        </li>
+        <li{% if page.slug == "components" %} class="active"{% endif %}>
+          <a class="leap-interactive" href="{{ page.base_url }}components">Components 1</a>
+        </li>
+         <li{% if page.slug == "more" %} class="active"{% endif %}>
+          <a class="leap-interactive" href="{{ page.base_url }}more">Components 2</a>
+        </li>
+        <li{% if page.slug == "js" %} class="active"{% endif %}>
+          <a class="leap-interactive" href="{{ page.base_url }}javascript">JavaScript</a>
+        </li>
+        
+       
+         
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li{% if page.slug == "about" %} class="active"{% endif %}>
+          <a class="leap-interactive" href="{{ page.base_url }}about">About</a>
+        </li>
+       <!-- 
+  <li{% if page.slug == "data" %} class="active"{% endif %}>
+          <a class="leap-interactive" href="{{ page.base_url }}data">Data</a>
+        </li>
+ -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <!-- Page content of course! -->
+    {{ content }}
+
+   <footer class="bs-footer" role="contentinfo">
+      <div class="container">
+        {% include social-buttons.html %}
+
+        <p>Maintained by <a class="leap-interactive" href="http://www.alex-wilkes.com" target="_blank">Alex Wilkes</a>.</p>
+        <ul class="footer-links">
+          <li>Currently v{{ site.current_version }}</li>
+          <li class="muted">&middot;</li>
+          <li><a class="leap-interactive" href="http://www.amazon.co.uk/gp/product/B00C66Z9ZC/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1634&creative=6738&creativeASIN=B00C66Z9ZC&linkCode=as2&tag=eosmnet-21">Buy Leap Controller</a><img src="http://ir-uk.amazon-adsystem.com/e/ir?t=eosmnet-21&l=as2&o=2&a=B00C66Z9ZC" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></li>
+        </ul>
+      </div>
+    </footer>
+
+    <!-- JS and analytics only. -->
+    {% include footer.html %}
+
+  </body>
+</html>
