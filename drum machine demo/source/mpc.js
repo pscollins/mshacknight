@@ -9,7 +9,7 @@ var MPC = function() {
   this.progressWidth = 256;
   this.keys = {'1':0,'2':1,'3':2,'4':3,'q':4,'w':5,'e':6,'r':7,'a':8,'s':9,'d':10,'f':11,'z':12,'x':13,'c':14,'v':15}
 
-  // scope within these event handler methods: "this" = SMSound() object instance (see SMSound() in soundmanager.js for reference) 
+  // scope within these event handler methods: "this" = SMSound() object instance (see SMSound() in soundmanager.js for reference)
 
   this.showProgress = function() {
     // sound is loading, update bytes received using this.bytesLoaded / this.bytesTotal
@@ -97,7 +97,7 @@ soundManager.setup({
     mpc.init();
 
     if (!soundManager.html5.needsFlash) {
-      document.getElementById('isHTML5').style.display = 'inline';
+		document.getElementById('isHTML5').style.display = 'inline';
     }
 
     var soundURLs = 'piano-1,piano-2,piano-3,piano-4,piano-5,piano-6,piano-7,piano-8,Beat,AMB_SN13,AMB_SN_5,CHINA_1,CRASH_1,CRASH_5,CRASH_6,RIDE_1'.split(',');
@@ -131,4 +131,3 @@ soundManager.setup({
      */
   }
 });
-

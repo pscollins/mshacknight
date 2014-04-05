@@ -11,12 +11,14 @@
  	<!-- You should update these links to point to your local files! -->
 
     <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="example_files/leapstrap.css">
+    <link rel="stylesheet" href="//wilkesalex.github.io/leapstrap/dist/css/leapstrap.css" />
+    <link rel="stylesheet" href="example_files/leapstrap.css">
     <!-- Custom styles for this template -->
   <link rel="stylesheet" href="example_files/example.css">
 
-    <script src="example_files/jquery-1.js"></script>
-    <script src="example_files/leap.js"></script>
+  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <!-- <script src="http://js.leapmotion.com/leap-0.4.3.js"></script> -->
+    <script src="http://js.leapmotion.com/leap-0.4.3.min.js"></script>
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="{{ page.base_url }}docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -62,7 +64,7 @@
       </div>
         <div class="row">
           <div class="col-xs-2">
-            <p><a class="btn btn-primary btn-lg leap-interactive" role="button" href="javascript:void(0);">Drum 1</a></p>
+            <p><a class="btn btn-primary btn-lg leap-interactive" role="button" onclick="console.log('hi');">Drum 1</a></p>
             <p><a class="btn btn-primary btn-lg leap-interactive" role="button" href="javascript:void(0);">Drum 4</a></p>
             <p><a class="btn btn-primary btn-lg leap-interactive" role="button" href="javascript:void(0);">Drum 7</a></p>
           </div>
