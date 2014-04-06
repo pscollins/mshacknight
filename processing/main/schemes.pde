@@ -128,6 +128,7 @@ class LazyKeyScheme extends KeyScheme {
 
 	void close() {
 		for (Key key : keys) {
+			key.stop();
 			key.note.close();
 		}
 	}

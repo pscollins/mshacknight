@@ -21,6 +21,7 @@ class Key {
 	AudioPlayer note;
 	// LoopingPlayer note;
 	boolean isLooping;
+	int edgeRadius = 15;
 
 	Key(int _x, int _y, int _width, String path, Minim minim){
 		println("init key for ", path);
@@ -35,7 +36,7 @@ class Key {
 	}
 
 	void draw() {
-		rect(x, y, width, height);
+		rect(x, y, width, height, edgeRadius);
 	}
 
 
@@ -203,8 +204,14 @@ void draw() {
 }
 
 void mousePressed(){
-	PVector position = new PVector(mouseX, mouseY);
-	keyManager.checkToPlay(position, loopManager);
+	if(mouseButton == LEFT) {
+		PVector position = new PVector(mouseX, mouseY);
+		keyManager.checkToPlay(position, loopManager);
+	} else {
+		colorManager.transition(true);
+		keyManager.transition(true);
+	}
+
 }
 
 
