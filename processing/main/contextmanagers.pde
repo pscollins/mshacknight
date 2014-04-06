@@ -21,6 +21,7 @@ abstract class  AbstractSchemeManager<T extends AbstractScheme> {
 	void transition(boolean isRight) {
 		currentIndex += isRight ? 1 : -1;
 		currentIndex = currentIndex % schemes.size();
+		println("new index: ", currentIndex);
 		currentScheme = schemes.get(currentIndex);
 		currentScheme.transition();
 	}
@@ -49,7 +50,11 @@ class KeySchemeManager extends AbstractSchemeManager<KeyScheme> {
 				"/home/patrick/hacking/web/mshacknight/processing/main/audio-1/",
 				layout, minim)));
 		println("got the first scheme done");
-		// schemes.add((new KeyScheme("audio-2", layout)));
+		// schemes.add((new KeyScheme("/home/patrick/hacking/web/mshacknight/processing/main/audio-2", layout, minim)));
+		schemes.add((new KeyScheme("/home/patrick/hacking/web/mshacknight/processing/main/audio-3", layout, minim)));
+
+		println("got #2");
+		println("schemes: ", schemes);
 		currentScheme = schemes.get(currentIndex);
 		println("set current scheme: ", currentScheme);
 	}
