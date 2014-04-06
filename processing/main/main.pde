@@ -4,6 +4,8 @@ import de.voidplus.leapmotion.*;
 int screenWidth = 1000;
 int screenHeight = 500;
 int numButtons = 5;
+int numRows = 2;
+int spacing = 40;
 ArrayList<Key> keys = new ArrayList<Key>();
 LeapMotion leap;
 ColorSchemeManager colorManager;
@@ -50,7 +52,6 @@ class ColorScheme {
 	ColorScheme(color _background, color _fill) {
 		myFill = _fill;
 		myBackground = _background;
-		transition();
 	}
 
 	void render() {
@@ -67,15 +68,22 @@ class ColorSchemeManager {
 	ArrayList<ColorScheme> colorSchemes;
 	ColorScheme currentScheme;
 	int currentIndex;
-	int maxIndex;
 
 	ColorSchemeManager() {
 		currentIndex = 0;
 		colorSchemes = new ArrayList<ColorScheme>();
-		colorSchemes.add(ColorScheme(color(255), color(50)));
-		colorSchemes.add(ColorScheme(color(50), color(255)));
+
+		colorSchemes.add((new ColorScheme(color(255), color(50))));
+		colorSchemes.add((new ColorScheme(color(50), color(255))));
+		// colorSchemes.add((new ColorScheme(color(0, 0, 255), color(255))));
+ 		// colorSchemes.add((new ColorScheme(color(0, 255, 0), color(255))));
+		// colorSchemes.add((new ColorScheme(color(255, 0, 0), color(255))));
 
 		currentScheme = colorSchemes.get(currentIndex);
+	}
+
+	void initialize() {
+		currentScheme.transition();
 	}
 
 	void render() {
@@ -84,7 +92,7 @@ class ColorSchemeManager {
 
 	void transition(boolean isRight) {
 		currentIndex += isRight ? 1 : -1;
-		currentIndex = currentIndex % colorSchemes.length();
+		currentIndex = currentIndex % colorSchemes.size();
 		currentScheme = colorSchemes.get(currentIndex);
 		currentScheme.transition();
 	}
@@ -96,16 +104,19 @@ class ColorSchemeManager {
 void setup() {
 	size(screenWidth, screenHeight, P3D);
 	colorManager = new ColorSchemeManager();
-	colorManager.render();
+	colorManager.initialize();
 
 	int step = screenWidth / numButtons;
 	int middleY = screenHeight / 2 - step;
 	Minim minim = new Minim(this);
 
-	for (int x = 0; x < screenWidth; x += step){
-		Key toAdd = new Key(x, middleY, step - 40, "./piano-1.mp3", minim);
-		keys.add(toAdd);
-		println("Added");
+	for (int row = 0; row < numRows; row++) {
+		for (int x = spacing / 2; x < screenWidth; x += step) {
+			Key toAdd = new Key(x, middleY, step - spacing, "./piano-1.mp3", minim);
+			keys.add(toAdd);
+			println("Added");
+		}
+		middleY += step;
 	}
 
 	leap = new LeapMotion(this).withGestures();
@@ -194,4 +205,29 @@ void leapOnKeyTapGesture(KeyTapGesture g){
 
 	println("ScreenTapGesture: "+id);
 	checkToPlay(position);
+}
+
+void leapOnSwipeGesture(SwipeGesture g, int state) {
+  int       id               = g.getId();
+  Finger    finger           = g.getFinger();
+  PVector   position         = g.getPosition();
+  PVector   position_start   = g.getStartPosition();
+  PVector   direction        = g.getDirection();
+  float     speed            = g.getSpeed();
+  long      duration         = g.getDuration();
+  float     duration_seconds = g.getDurationInSeconds();
+
+println("Swipe detected! Direction is: ", direction);
+
+  switch(state) {
+   case 3: // Transition on the end of the swipe
+
+    boolean isRight = direction.x > 500;
+    println("isRight? ", isRight);
+     colorManager.transition(isRight);
+  default:
+    break;
+  }
+
+
 }
