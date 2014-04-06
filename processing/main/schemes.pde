@@ -115,3 +115,20 @@ class KeyScheme extends AbstractScheme {
 		}
 	}
 }
+
+
+class LazyKeyScheme extends KeyScheme {
+	LazyKeyScheme(String basePath, KeyLayout layout, Minim minim) {
+		super(basePath, layout, minim);
+		// basePath = _basePath;
+		// layout = _layout;
+		// minim = _minim;
+		// isInitialized = false;
+	}
+
+	void close() {
+		for (Key key : keys) {
+			key.note.close();
+		}
+	}
+}

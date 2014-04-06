@@ -27,16 +27,18 @@ echo
 uname -m|grep -q 64
 if [ $? -eq 0 ]
 then
-        P2="/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/"
-        P3="/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/"
-        F2="amd64/libpulse-java.so"
+	P1="/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/"
+    P2="/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/"
+    P3="/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/"
+    F2="amd64/libpulse-java.so"
 else
+	P1="/usr/lib/jvm/java-7-openjdk-i386/jre/lib/"
         P2="/usr/lib/jvm/java-7-openjdk-i386/jre/lib/"
         P3="/usr/lib/jvm/java-7-openjdk-i386/jre/lib/"
         F2="i386/libpulse-java.so"
 fi
 
-P1="/usr/lib/jvm/java-7-openjdk-common/jre/lib/"
+# P1="/usr/lib/jvm/java-7-openjdk-common/jre/lib/"
 
 F1="ext/pulse-java.jar"
 F3="sound.properties"
@@ -72,9 +74,9 @@ set -e
 
 TARGET="$1/java/lib/"
 
-sudo cp $TARGET$F1 $TARGET$F1-bak
-sudo cp $TARGET$F2 $TARGET$F2-bak
-sudo cp $TARGET$F3 $TARGET$F3-bak
+# sudo cp $TARGET$F1 $TARGET$F1-bak
+# sudo cp $TARGET$F2 $TARGET$F2-bak
+# sudo cp $TARGET$F3 $TARGET$F3-bak
 
 sudo cp $P1$F1 $TARGET$F1
 sudo cp $P2$F2 $TARGET$F2
