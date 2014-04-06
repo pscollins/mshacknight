@@ -7,10 +7,10 @@ int screenHeight = 500;
 int numButtons = 5;
 int numRows = 2;
 int spacing = 40;
-ArrayList<Key> keys = new ArrayList<Key>();
 LeapMotion leap;
 ColorSchemeManager colorManager;
 LoopManager loopManager;
+KeySchemeManager keyManager;
 
 class Key {
 	int x;
@@ -21,6 +21,8 @@ class Key {
 	boolean isLooping;
 
 	Key(int _x, int _y, int _width, String path, Minim minim){
+		println("init key for ", path);
+		println("with minim ", minim);
 		x = _x;
 		y = _y;
 		width = _width;
@@ -66,40 +68,6 @@ class Key {
 
 }
 
-
-// class ColorSchemeManager {
-// 	ArrayList<ColorScheme> colorSchemes;
-// 	ColorScheme currentScheme;
-// 	int currentIndex;
-
-// 	ColorSchemeManager() {
-// 		currentIndex = 0;
-// 		colorSchemes = new ArrayList<ColorScheme>();
-
-// 		colorSchemes.add((new ColorScheme(color(255), color(50))));
-// 		colorSchemes.add((new ColorScheme(color(50), color(255))));
-// 		// colorSchemes.add((new ColorScheme(color(0, 0, 255), color(255))));
-// 		// colorSchemes.add((new ColorScheme(color(0, 255, 0), color(255))));
-// 		// colorSchemes.add((new ColorScheme(color(255, 0, 0), color(255))));
-
-// 		currentScheme = colorSchemes.get(currentIndex);
-// 	}
-
-// 	void initialize() {
-// 		currentScheme.transition();
-// 	}
-
-// 	void render() {
-// 		currentScheme.render();
-// 	}
-
-// 	void transition(boolean isRight) {
-// 		currentIndex += isRight ? 1 : -1;
-// 		currentIndex = currentIndex % colorSchemes.size();
-// 		currentScheme = colorSchemes.get(currentIndex);
-// 		currentScheme.transition();
-// 	}
-// }
 
 
 class VolumeManager {
@@ -148,27 +116,34 @@ void setup() {
 	colorManager = new ColorSchemeManager();
 	colorManager.initialize();
 
-	int step = screenWidth / numButtons;
-	int middleY = screenHeight / 2 - step;
+	KeyLayout layout = new KeyLayout(numRows,
+	                                 numButtons,
+	                                 screenWidth,
+	                                 screenHeight,
+	                                 spacing);
 	Minim minim = new Minim(this);
 
-	for (int row = 0; row < numRows; row++) {
-		for (int x = spacing / 2; x < screenWidth; x += step) {
-			Key toAdd = new Key(x, middleY, step - spacing, "./piano-1.mp3", minim);
-			keys.add(toAdd);
-			println("Added");
-		}
-		middleY += step;
-	}
-
+	keyManager = new KeySchemeManager(minim, layout);
+	keyManager.initialize();
+	println("about to init leap");
 	leap = new LeapMotion(this).withGestures();
+	println("about to init loop manager");
 	loopManager = new LoopManager();
-}
 
-void drawKeys() {
-	for (Key key : keys) {
-		key.draw();
-	}
+
+
+	// int step = screenWidth / numButtons;
+	// int middleY = screenHeight / 2 - step;
+
+
+	// for (int row = 0; row < numRows; row++) {
+	// 	for (int x = spacing / 2; x < screenWidth; x += step) {
+	// 		Key toAdd = new Key(x, middleY, step - spacing, "./piano-1.mp3", minim);
+	// 		keys.add(toAdd);
+	// 		println("Added");
+	// 	}
+	// 	middleY += step;
+	// }
 }
 
 void drawFingers() {
@@ -220,23 +195,13 @@ void drawFingers() {
 
 void draw() {
 	colorManager.render();
+	keyManager.render();
 	drawFingers();
-	drawKeys();
-}
-
-void checkToPlay(PVector position) {
-	for (Key key : keys) {
-		if(key.isTouching(position)) {
-			println("Got a hit! About to play...");
-			key.play();
-			loopManager.set(key);
-		}
-	}
 }
 
 void mousePressed(){
 	PVector position = new PVector(mouseX, mouseY);
-	checkToPlay(position);
+	keyManager.checkToPlay(position, loopManager);
 }
 
 
@@ -298,7 +263,7 @@ void leapOnKeyTapGesture(KeyTapGesture g){
 	float     duration_seconds = g.getDurationInSeconds();
 
 	println("ScreenTapGesture: "+id);
-	checkToPlay(position);
+	keyManager.checkToPlay(position, loopManager);
 }
 
 void leapOnSwipeGesture(SwipeGesture g, int state) {
@@ -319,6 +284,7 @@ void leapOnSwipeGesture(SwipeGesture g, int state) {
 		boolean isRight = direction.x > 500;
 		println("isRight? ", isRight);
 		colorManager.transition(isRight);
+		keyManager.transition(isRight);
 	default:
 		break;
 	}
