@@ -1,5 +1,6 @@
 import ddf.minim.*;
 import de.voidplus.leapmotion.*;
+import java.util.*;
 
 int screenWidth = 1000;
 int screenHeight = 500;
@@ -38,19 +39,20 @@ class Key {
 
 
 	void loop() {
+		println("looping!");
 		note.loop();
-		note.rewind(); 			// don't know if this does anything
+		note.rewind();
 	}
 
 
 	void stop() {
-		note.stop();
+		note.pause();
 		note.rewind();
 	}
 
 	boolean isTouching(PVector touch) {
-		println("Checking for touch at:", touch.x, touch.y);
-		println("My coords:", x, y, "width: ", width);
+//		println("Checking for touch at:", touch.x, touch.y);
+//		println("My coords:", x, y, "width: ", width);
 
 		return ((touch.x >= x && touch.x <= x + width) &&
 		        (touch.y >= y && touch.y <= y + height));
@@ -122,21 +124,33 @@ class LoopManager {
 
 	LoopManager() {
 		lastClicked = null;
-		isLooping = false;
+		loopingKeys = new Stack<Key>();
 	}
 
 	void set(Key key) {
+		println("setting last clicked to ", key);
 		lastClicked = key;
 	}
 
 	void start() {
-		loopingKeys.push(lastClicked);
-		lastClicked.loop();
+		println("starting");
+		if(lastClicked != null) {
+			println("pushing on ", lastClicked);
+			loopingKeys.push(lastClicked);
+			lastClicked.loop();
+		}
 	}
 
 	void stopLast() {
-		Key toStop = loopingKeys.pop();
-		toStop.stop();
+		if(loopingKeys.size() > 0) {
+			Key toStop = loopingKeys.pop();
+			toStop.stop();
+		}
+	}
+
+	void printDiagnostics() {
+		println("printing diagnostics");
+		println("stack size: ", loopingKeys.size());
 	}
 }
 
@@ -226,7 +240,7 @@ void checkToPlay(PVector position) {
 		if(key.isTouching(position)) {
 			println("Got a hit! About to play...");
 			key.play();
-			LoopManager.set(key);
+			loopManager.set(key);
 		}
 	}
 }
@@ -249,13 +263,15 @@ void mousePressed(){
 // }
 
 void leapOnCircleGesture(CircleGesture g, int state) {
+	println("got circle gesture");
+	loopManager.printDiagnostics();
 
 	switch(state) {
 	case 3:
 		if(isClockwise(g)) {
 			loopManager.start();
 		} else {
-			loopManager.stop();
+			loopManager.stopLast();
 		}
 
 	default:
@@ -264,16 +280,16 @@ void leapOnCircleGesture(CircleGesture g, int state) {
 }
 
 // http://stackoverflow.com/questions/2150050/finding-signed-angle-between-vectors
-float getVectorAngle(PVector x, PVector y) {
-	float angle = Math.atan2(a.x - b.x, a.x*b.x + a.y*b.y);
+double getVectorAngle(PVector a, PVector b) {
+	double angle = Math.atan2(a.y - b.y, a.x - b.x);
 	return angle;
 }
 
-float isCircleClockwise(CircleGesture g) {
+boolean isClockwise(CircleGesture g) {
 	PVector normal = g.getNormal();
 	PVector direction = g.getFinger().getDirection();
-	float angle = getVectorAngle(normal, direction);
-	boolean isClockwise = Math.abs(angle) < Math.PI;
+	double angle = getVectorAngle(normal, direction);
+	boolean isClockwise = Math.abs(angle) > Math.PI/4;
 
 	println("angle between finger and circle: ", angle);
 	println("is clockwise? ", isClockwise);
