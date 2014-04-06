@@ -10,14 +10,16 @@ int spacing = 40;
 LeapMotion leap;
 ColorSchemeManager colorManager;
 LoopManager loopManager;
-KeySchemeManager keyManager;
+// KeySchemeManager keyManager;
+LazyKeySchemeManager keyManager;
 
 class Key {
 	int x;
-	int y;
+ 	int y;
 	int width;
 	int height;
 	AudioPlayer note;
+	// LoopingPlayer note;
 	boolean isLooping;
 
 	Key(int _x, int _y, int _width, String path, Minim minim){
@@ -27,7 +29,8 @@ class Key {
 		y = _y;
 		width = _width;
 		height = _width;
-		note = minim.loadFile(path, 2048);
+		note = minim.loadFile(path);
+		// note = new LoopingPlayer(path);
 		isLooping = false;
 	}
 
@@ -123,7 +126,7 @@ void setup() {
 	                                 spacing);
 	Minim minim = new Minim(this);
 
-	keyManager = new KeySchemeManager(minim, layout);
+	keyManager = new LazyKeySchemeManager(minim, layout);
 	keyManager.initialize();
 	println("about to init leap");
 	leap = new LeapMotion(this).withGestures();
