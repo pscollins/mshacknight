@@ -154,7 +154,7 @@ void drawFingers() {
 	// HANDS
 	for(Hand hand : leap.getHands()){
 
-		hand.draw();
+		// hand.draw();
 		int     hand_id          = hand.getId();
 		PVector hand_position    = hand.getPosition();
 		PVector hand_stabilized  = hand.getStabilizedPosition();
@@ -171,6 +171,7 @@ void drawFingers() {
 		for(Finger finger : hand.getFingers()){
 
 			// Basics
+			fill(0);
 			finger.draw();
 			int     finger_id         = finger.getId();
 			PVector finger_position   = finger.getPosition();
@@ -298,6 +299,5 @@ void leapOnSwipeGesture(SwipeGesture g, int state) {
 	default:
 		break;
 	}
-
 
 }

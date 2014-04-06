@@ -47,6 +47,7 @@ class ColorSchemeManager extends AbstractSchemeManager<ColorScheme> {
 
 		color semiSteel = color(100, 118, 135, 150);
 		color semiWhite = color(255, 255, 255, 200);
+		color semiBlack = color(0, 0, 0, 200);
 
 		schemes.add((new ColorScheme(cobalt, semiWhite)));
 		schemes.add((new ColorScheme(red,
