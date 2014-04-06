@@ -15,7 +15,7 @@ LazyKeySchemeManager keyManager;
 
 class Key {
 	int x;
- 	int y;
+	int y;
 	int width;
 	int height;
 	AudioPlayer note;

@@ -9,7 +9,7 @@ class SineWave implements ISteppable {
 	int w;              // Width of entire wave
 
 	float theta = 0.0;  // Start angle at 0
-	float amplitude = 75.0;  // Height of wave
+	float amplitude = 200.0;  // Height of wave
 	float period = 500.0;  // How many pixels before the wave repeats
 	float dx;  // Value for incrementing X, a function of period and xspacing
 	float[] yvalues;  // Using an array to store height values for the wave
@@ -29,17 +29,17 @@ class SineWave implements ISteppable {
 		renderWave();
 	}
 
-void calcWave() {
-	// Increment theta (try different values for 'angular velocity' here
-	theta += 0.02;
+	void calcWave() {
+		// Increment theta (try different values for 'angular velocity' here
+		theta += 0.02;
 
-	// For every x value, calculate a y value with sine function
-	float x = theta;
-	for (int i = 0; i < yvalues.length; i++) {
-		yvalues[i] = sin(x)*amplitude;
-		x+=dx;
+		// For every x value, calculate a y value with sine function
+		float x = theta;
+		for (int i = 0; i < yvalues.length; i++) {
+			yvalues[i] = sin(x)*amplitude - 20;
+			x+=dx;
+		}
 	}
-}
 
 	void renderWave() {
 		noStroke();

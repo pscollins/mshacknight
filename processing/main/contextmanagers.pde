@@ -93,13 +93,12 @@ class KeySchemeManager extends AbstractSchemeManager<KeyScheme> {
 class LazyKeySchemeManager extends AbstractSchemeManager<LazyKeyScheme> {
 	String[] paths = {
 		"/home/patrick/hacking/web/mshacknight/processing/main/audio-1/",
-		"/home/patrick/hacking/web/mshacknight/processing/main/audio-2/"};
+		"/home/patrick/hacking/web/mshacknight/processing/main/daftpunk/"};
 	// 	"/home/patrick/hacking/web/mshacknight/processing/main/audio-3"
 	// };
 
 	Minim minim;
 	KeyLayout layout;
-
 
 	LazyKeySchemeManager(Minim _minim, KeyLayout _layout) {
 		super();
@@ -147,5 +146,4 @@ class LazyKeySchemeManager extends AbstractSchemeManager<LazyKeyScheme> {
 	void checkToPlay(PVector position, LoopManager loopManager) {
 		currentScheme.checkToPlay(position, loopManager);
 	}
-
 }

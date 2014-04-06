@@ -40,10 +40,10 @@ class ColorScheme extends AbstractScheme {
 		for (ISteppable steppable : steppables) {
 			steppable.initialize();
 		}
-
-
 	}
+
 }
+
 
 class KeyLayout {
 	int rows;
