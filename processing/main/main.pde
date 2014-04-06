@@ -9,6 +9,7 @@ int spacing = 40;
 ArrayList<Key> keys = new ArrayList<Key>();
 LeapMotion leap;
 ColorSchemeManager colorManager;
+LoopManager loopManager;
 
 class Key {
 	int x;
@@ -35,10 +36,22 @@ class Key {
 		note.rewind();
 	}
 
+
+	void loop() {
+		note.loop();
+		note.rewind(); 			// don't know if this does anything
+	}
+
+
+	void stop() {
+		note.stop();
+		note.rewind();
+	}
+
 	boolean isTouching(PVector touch) {
 		println("Checking for touch at:", touch.x, touch.y);
 		println("My coords:", x, y, "width: ", width);
-		println("Touching? " + ((touch.x >= x && touch.x <= x + width) && (touch.y >= y && touch.y <= y + height)));
+
 		return ((touch.x >= x && touch.x <= x + width) &&
 		        (touch.y >= y && touch.y <= y + height));
 	}
@@ -76,7 +89,7 @@ class ColorSchemeManager {
 		colorSchemes.add((new ColorScheme(color(255), color(50))));
 		colorSchemes.add((new ColorScheme(color(50), color(255))));
 		// colorSchemes.add((new ColorScheme(color(0, 0, 255), color(255))));
- 		// colorSchemes.add((new ColorScheme(color(0, 255, 0), color(255))));
+		// colorSchemes.add((new ColorScheme(color(0, 255, 0), color(255))));
 		// colorSchemes.add((new ColorScheme(color(255, 0, 0), color(255))));
 
 		currentScheme = colorSchemes.get(currentIndex);
@@ -99,7 +112,33 @@ class ColorSchemeManager {
 }
 
 
+class VolumeManager {
+	ArrayList<Key> keys;
+}
 
+class LoopManager {
+	Key lastClicked;
+	Stack<Key> loopingKeys;
+
+	LoopManager() {
+		lastClicked = null;
+		isLooping = false;
+	}
+
+	void set(Key key) {
+		lastClicked = key;
+	}
+
+	void start() {
+		loopingKeys.push(lastClicked);
+		lastClicked.loop();
+	}
+
+	void stopLast() {
+		Key toStop = loopingKeys.pop();
+		toStop.stop();
+	}
+}
 
 void setup() {
 	size(screenWidth, screenHeight, P3D);
@@ -120,6 +159,7 @@ void setup() {
 	}
 
 	leap = new LeapMotion(this).withGestures();
+	loopManager = new LoopManager();
 }
 
 void drawKeys() {
@@ -186,6 +226,7 @@ void checkToPlay(PVector position) {
 		if(key.isTouching(position)) {
 			println("Got a hit! About to play...");
 			key.play();
+			LoopManager.set(key);
 		}
 	}
 }
@@ -194,6 +235,53 @@ void mousePressed(){
 	PVector position = new PVector(mouseX, mouseY);
 	checkToPlay(position);
 }
+
+
+// If you draw the circle clockwise, the normal vector points in the
+// same general direction as the pointable object drawing the
+// circle. If you draw the circle counterclockwise, the normal points
+// back toward the pointable. If the angle between the normal and the
+// pointable object drawing the circle is less than 90 degrees, then
+// the circle is clockwise. (from the javascript documentation)
+
+// if (circle.pointable.direction.angleTo(circle.normal) <= PI/4) {
+//      clockwiseness = "clockwise";
+// }
+
+void leapOnCircleGesture(CircleGesture g, int state) {
+
+	switch(state) {
+	case 3:
+		if(isClockwise(g)) {
+			loopManager.start();
+		} else {
+			loopManager.stop();
+		}
+
+	default:
+		break;
+	}
+}
+
+// http://stackoverflow.com/questions/2150050/finding-signed-angle-between-vectors
+float getVectorAngle(PVector x, PVector y) {
+	float angle = Math.atan2(a.x - b.x, a.x*b.x + a.y*b.y);
+	return angle;
+}
+
+float isCircleClockwise(CircleGesture g) {
+	PVector normal = g.getNormal();
+	PVector direction = g.getFinger().getDirection();
+	float angle = getVectorAngle(normal, direction);
+	boolean isClockwise = Math.abs(angle) < Math.PI;
+
+	println("angle between finger and circle: ", angle);
+	println("is clockwise? ", isClockwise);
+
+	return isClockwise;
+}
+
+
 
 void leapOnKeyTapGesture(KeyTapGesture g){
 	int       id               = g.getId();
@@ -208,26 +296,26 @@ void leapOnKeyTapGesture(KeyTapGesture g){
 }
 
 void leapOnSwipeGesture(SwipeGesture g, int state) {
-  int       id               = g.getId();
-  Finger    finger           = g.getFinger();
-  PVector   position         = g.getPosition();
-  PVector   position_start   = g.getStartPosition();
-  PVector   direction        = g.getDirection();
-  float     speed            = g.getSpeed();
-  long      duration         = g.getDuration();
-  float     duration_seconds = g.getDurationInSeconds();
+	int       id               = g.getId();
+	Finger    finger           = g.getFinger();
+	PVector   position         = g.getPosition();
+	PVector   position_start   = g.getStartPosition();
+	PVector   direction        = g.getDirection();
+	float     speed            = g.getSpeed();
+	long      duration         = g.getDuration();
+	float     duration_seconds = g.getDurationInSeconds();
 
-println("Swipe detected! Direction is: ", direction);
+	println("Swipe detected! Direction is: ", direction);
 
-  switch(state) {
-   case 3: // Transition on the end of the swipe
+	switch(state) {
+	case 3: // Transition on the end of the swipe
 
-    boolean isRight = direction.x > 500;
-    println("isRight? ", isRight);
-     colorManager.transition(isRight);
-  default:
-    break;
-  }
+		boolean isRight = direction.x > 500;
+		println("isRight? ", isRight);
+		colorManager.transition(isRight);
+	default:
+		break;
+	}
 
 
 }
