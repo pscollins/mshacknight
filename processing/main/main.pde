@@ -1,0 +1,197 @@
+import ddf.minim.*;
+import de.voidplus.leapmotion.*;
+
+int screenWidth = 1000;
+int screenHeight = 500;
+int numButtons = 5;
+ArrayList<Key> keys = new ArrayList<Key>();
+LeapMotion leap;
+ColorSchemeManager colorManager;
+
+class Key {
+	int x;
+	int y;
+	int width;
+	int height;
+	AudioPlayer note;
+
+	Key(int _x, int _y, int _width, String path, Minim minim){
+		x = _x;
+		y = _y;
+		width = _width;
+		height = _width;
+		note = minim.loadFile(path, 2048);
+	}
+
+	void draw() {
+		rect(x, y, width, height);
+	}
+
+
+	void play() {
+		note.play();
+		note.rewind();
+	}
+
+	boolean isTouching(PVector touch) {
+		println("Checking for touch at:", touch.x, touch.y);
+		println("My coords:", x, y, "width: ", width);
+		println("Touching? " + ((touch.x >= x && touch.x <= x + width) && (touch.y >= y && touch.y <= y + height)));
+		return ((touch.x >= x && touch.x <= x + width) &&
+		        (touch.y >= y && touch.y <= y + height));
+	}
+
+}
+
+class ColorScheme {
+	color myBackground;
+	color myFill;
+
+	ColorScheme(color _background, color _fill) {
+		myFill = _fill;
+		myBackground = _background;
+		transition();
+	}
+
+	void render() {
+		background(myBackground);
+	}
+
+	void transition() {
+		fill(myFill);
+		background(myBackground);
+	}
+}
+
+class ColorSchemeManager {
+	ArrayList<ColorScheme> colorSchemes;
+	ColorScheme currentScheme;
+	int currentIndex;
+	int maxIndex;
+
+	ColorSchemeManager() {
+		currentIndex = 0;
+		colorSchemes = new ArrayList<ColorScheme>();
+		colorSchemes.add(ColorScheme(color(255), color(50)));
+		colorSchemes.add(ColorScheme(color(50), color(255)));
+
+		currentScheme = colorSchemes.get(currentIndex);
+	}
+
+	void render() {
+		currentScheme.render();
+	}
+
+	void transition(boolean isRight) {
+		currentIndex += isRight ? 1 : -1;
+		currentIndex = currentIndex % colorSchemes.length();
+		currentScheme = colorSchemes.get(currentIndex);
+		currentScheme.transition();
+	}
+}
+
+
+
+
+void setup() {
+	size(screenWidth, screenHeight, P3D);
+	colorManager = new ColorSchemeManager();
+	colorManager.render();
+
+	int step = screenWidth / numButtons;
+	int middleY = screenHeight / 2 - step;
+	Minim minim = new Minim(this);
+
+	for (int x = 0; x < screenWidth; x += step){
+		Key toAdd = new Key(x, middleY, step - 40, "./piano-1.mp3", minim);
+		keys.add(toAdd);
+		println("Added");
+	}
+
+	leap = new LeapMotion(this).withGestures();
+}
+
+void drawKeys() {
+	for (Key key : keys) {
+		key.draw();
+	}
+}
+
+void drawFingers() {
+	// HANDS
+	for(Hand hand : leap.getHands()){
+
+		hand.draw();
+		int     hand_id          = hand.getId();
+		PVector hand_position    = hand.getPosition();
+		PVector hand_stabilized  = hand.getStabilizedPosition();
+		PVector hand_direction   = hand.getDirection();
+		PVector hand_dynamics    = hand.getDynamics();
+		float   hand_roll        = hand.getRoll();
+		float   hand_pitch       = hand.getPitch();
+		float   hand_yaw         = hand.getYaw();
+		float   hand_time        = hand.getTimeVisible();
+		PVector sphere_position  = hand.getSpherePosition();
+		float   sphere_radius    = hand.getSphereRadius();
+
+		// FINGERS
+		for(Finger finger : hand.getFingers()){
+
+			// Basics
+			finger.draw();
+			int     finger_id         = finger.getId();
+			PVector finger_position   = finger.getPosition();
+			PVector finger_stabilized = finger.getStabilizedPosition();
+			PVector finger_velocity   = finger.getVelocity();
+			PVector finger_direction  = finger.getDirection();
+			float   finger_time       = finger.getTimeVisible();
+
+			// Touch Emulation
+			int     touch_zone        = finger.getTouchZone();
+			float   touch_distance    = finger.getTouchDistance();
+
+			switch(touch_zone){
+			case -1: // None
+				break;
+			case 0: // Hovering
+				// println("Hovering (#"+finger_id+"): "+touch_distance);
+				break;
+			case 1: // Touching
+				// println("Touching (#"+finger_id+")");
+				break;
+			}
+		}
+	}
+}
+
+void draw() {
+	colorManager.render();
+	drawFingers();
+	drawKeys();
+}
+
+void checkToPlay(PVector position) {
+	for (Key key : keys) {
+		if(key.isTouching(position)) {
+			println("Got a hit! About to play...");
+			key.play();
+		}
+	}
+}
+
+void mousePressed(){
+	PVector position = new PVector(mouseX, mouseY);
+	checkToPlay(position);
+}
+
+void leapOnKeyTapGesture(KeyTapGesture g){
+	int       id               = g.getId();
+	Finger    finger           = g.getFinger();
+	PVector   position         = g.getPosition();
+	PVector   direction        = g.getDirection();
+	long      duration         = g.getDuration();
+	float     duration_seconds = g.getDurationInSeconds();
+
+	println("ScreenTapGesture: "+id);
+	checkToPlay(position);
+}
