@@ -18,6 +18,7 @@ class Key {
 	int width;
 	int height;
 	AudioPlayer note;
+	boolean isLooping;
 
 	Key(int _x, int _y, int _width, String path, Minim minim){
 		x = _x;
@@ -25,6 +26,7 @@ class Key {
 		width = _width;
 		height = _width;
 		note = minim.loadFile(path, 2048);
+		isLooping = false;
 	}
 
 	void draw() {
@@ -33,8 +35,10 @@ class Key {
 
 
 	void play() {
-		note.play();
-		note.rewind();
+		if(!isLooping) {
+			note.play();
+			note.rewind();
+		}
 	}
 
 
@@ -42,12 +46,14 @@ class Key {
 		println("looping!");
 		note.loop();
 		note.rewind();
+		isLooping = true;
 	}
 
 
 	void stop() {
 		note.pause();
 		note.rewind();
+		isLooping = false;
 	}
 
 	boolean isTouching(PVector touch) {
@@ -60,58 +66,40 @@ class Key {
 
 }
 
-class ColorScheme {
-	color myBackground;
-	color myFill;
 
-	ColorScheme(color _background, color _fill) {
-		myFill = _fill;
-		myBackground = _background;
-	}
+// class ColorSchemeManager {
+// 	ArrayList<ColorScheme> colorSchemes;
+// 	ColorScheme currentScheme;
+// 	int currentIndex;
 
-	void render() {
-		background(myBackground);
-	}
+// 	ColorSchemeManager() {
+// 		currentIndex = 0;
+// 		colorSchemes = new ArrayList<ColorScheme>();
 
-	void transition() {
-		fill(myFill);
-		background(myBackground);
-	}
-}
+// 		colorSchemes.add((new ColorScheme(color(255), color(50))));
+// 		colorSchemes.add((new ColorScheme(color(50), color(255))));
+// 		// colorSchemes.add((new ColorScheme(color(0, 0, 255), color(255))));
+// 		// colorSchemes.add((new ColorScheme(color(0, 255, 0), color(255))));
+// 		// colorSchemes.add((new ColorScheme(color(255, 0, 0), color(255))));
 
-class ColorSchemeManager {
-	ArrayList<ColorScheme> colorSchemes;
-	ColorScheme currentScheme;
-	int currentIndex;
+// 		currentScheme = colorSchemes.get(currentIndex);
+// 	}
 
-	ColorSchemeManager() {
-		currentIndex = 0;
-		colorSchemes = new ArrayList<ColorScheme>();
+// 	void initialize() {
+// 		currentScheme.transition();
+// 	}
 
-		colorSchemes.add((new ColorScheme(color(255), color(50))));
-		colorSchemes.add((new ColorScheme(color(50), color(255))));
-		// colorSchemes.add((new ColorScheme(color(0, 0, 255), color(255))));
-		// colorSchemes.add((new ColorScheme(color(0, 255, 0), color(255))));
-		// colorSchemes.add((new ColorScheme(color(255, 0, 0), color(255))));
+// 	void render() {
+// 		currentScheme.render();
+// 	}
 
-		currentScheme = colorSchemes.get(currentIndex);
-	}
-
-	void initialize() {
-		currentScheme.transition();
-	}
-
-	void render() {
-		currentScheme.render();
-	}
-
-	void transition(boolean isRight) {
-		currentIndex += isRight ? 1 : -1;
-		currentIndex = currentIndex % colorSchemes.size();
-		currentScheme = colorSchemes.get(currentIndex);
-		currentScheme.transition();
-	}
-}
+// 	void transition(boolean isRight) {
+// 		currentIndex += isRight ? 1 : -1;
+// 		currentIndex = currentIndex % colorSchemes.size();
+// 		currentScheme = colorSchemes.get(currentIndex);
+// 		currentScheme.transition();
+// 	}
+// }
 
 
 class VolumeManager {
@@ -134,8 +122,9 @@ class LoopManager {
 
 	void start() {
 		println("starting");
-		if(lastClicked != null) {
-			println("pushing on ", lastClicked);
+		println("last clicked: ", lastClicked);
+		if(lastClicked != null &&
+		   loopingKeys.indexOf(lastClicked) == -1) {
 			loopingKeys.push(lastClicked);
 			lastClicked.loop();
 		}
@@ -267,6 +256,7 @@ void leapOnCircleGesture(CircleGesture g, int state) {
 	loopManager.printDiagnostics();
 
 	switch(state) {
+	case 1:
 	case 3:
 		if(isClockwise(g)) {
 			loopManager.start();
