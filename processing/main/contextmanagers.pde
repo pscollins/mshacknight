@@ -29,7 +29,7 @@ abstract class  AbstractSchemeManager<T extends AbstractScheme> {
 
 
 class ColorSchemeManager extends AbstractSchemeManager<ColorScheme> {
-	ColorSchemeManager() {
+	ColorSchemeManager(int pageWidth) {
 		super();
 		println("init color scheme");
 
@@ -45,9 +45,18 @@ class ColorSchemeManager extends AbstractSchemeManager<ColorScheme> {
 		color steel = color(100, 118, 135);
 		color cobalt = color(0, 80, 239);
 
-		schemes.add((new ColorScheme(steel, cobalt)));
-		schemes.add((new ColorScheme(cobalt,
-		                             steel)));
+		color semiSteel = color(100, 118, 135, 150);
+		color semiWhite = color(255, 255, 255, 200);
+
+		schemes.add((new ColorScheme(cobalt, semiWhite)));
+		schemes.add((new ColorScheme(red,
+		                             semiWhite)));
+
+		SineWave toAdd = new SineWave(pageWidth);
+		for (ColorScheme scheme : schemes) {
+			scheme.addSteppable(toAdd);
+		}
+
 		currentScheme = schemes.get(currentIndex);
 	}
 }

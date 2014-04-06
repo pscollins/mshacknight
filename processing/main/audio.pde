@@ -1,11 +1,24 @@
 import beads.*;
 import org.jaudiolibs.beads.*;
 
+import supercollider.*;
+
 // import beads.ugens.*;
 // import beads.data.*;
 // import beads.core.*;
 
-class LoopingPlayer {
+interface IPlayer {
+	void play();
+	void rewind();
+	void loop();
+	void pause();
+}
+
+class ColliderLoopingPlayer implements IPlayer {
+	private
+
+
+class BeadsLoopingPlayer implements IPlayer  {
 	private SamplePlayer player;
 	LoopingPlayer(String path) {
 		try {

@@ -117,7 +117,7 @@ class LoopManager {
 
 void setup() {
 	size(screenWidth, screenHeight, P3D);
-	colorManager = new ColorSchemeManager();
+	colorManager = new ColorSchemeManager(screenWidth);
 	colorManager.initialize();
 
 	KeyLayout layout = new KeyLayout(numRows,

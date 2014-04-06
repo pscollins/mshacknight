@@ -11,19 +11,37 @@ abstract class AbstractScheme {
 class ColorScheme extends AbstractScheme {
 	color myBackground;
 	color myFill;
+	ArrayList<ISteppable> steppables;
 
 	ColorScheme(color _background, color _fill) {
 		myFill = _fill;
 		myBackground = _background;
+		steppables = new ArrayList<ISteppable>();
 	}
 
 	void render() {
 		background(myBackground);
+
+		for (ISteppable steppable : steppables) {
+			steppable.step();
+		}
+
+		fill(myFill);
+	}
+
+	void addSteppable(ISteppable steppable) {
+		steppables.add(steppable);
 	}
 
 	void transition() {
 		fill(myFill);
 		background(myBackground);
+
+		for (ISteppable steppable : steppables) {
+			steppable.initialize();
+		}
+
+
 	}
 }
 
