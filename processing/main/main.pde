@@ -15,12 +15,13 @@ LazyKeySchemeManager keyManager;
 
 class Key {
 	int x;
- 	int y;
+	int y;
 	int width;
 	int height;
 	AudioPlayer note;
 	// LoopingPlayer note;
 	boolean isLooping;
+	int edgeRadius = 15;
 
 	Key(int _x, int _y, int _width, String path, Minim minim){
 		println("init key for ", path);
@@ -35,7 +36,7 @@ class Key {
 	}
 
 	void draw() {
-		rect(x, y, width, height);
+		rect(x, y, width, height, edgeRadius);
 	}
 
 
@@ -116,7 +117,7 @@ class LoopManager {
 
 void setup() {
 	size(screenWidth, screenHeight, P3D);
-	colorManager = new ColorSchemeManager();
+	colorManager = new ColorSchemeManager(screenWidth);
 	colorManager.initialize();
 
 	KeyLayout layout = new KeyLayout(numRows,
@@ -153,7 +154,7 @@ void drawFingers() {
 	// HANDS
 	for(Hand hand : leap.getHands()){
 
-		hand.draw();
+		// hand.draw();
 		int     hand_id          = hand.getId();
 		PVector hand_position    = hand.getPosition();
 		PVector hand_stabilized  = hand.getStabilizedPosition();
@@ -170,6 +171,7 @@ void drawFingers() {
 		for(Finger finger : hand.getFingers()){
 
 			// Basics
+			fill(0);
 			finger.draw();
 			int     finger_id         = finger.getId();
 			PVector finger_position   = finger.getPosition();
@@ -203,8 +205,14 @@ void draw() {
 }
 
 void mousePressed(){
-	PVector position = new PVector(mouseX, mouseY);
-	keyManager.checkToPlay(position, loopManager);
+	if(mouseButton == LEFT) {
+		PVector position = new PVector(mouseX, mouseY);
+		keyManager.checkToPlay(position, loopManager);
+	} else {
+		colorManager.transition(true);
+		keyManager.transition(true);
+	}
+
 }
 
 
@@ -291,6 +299,5 @@ void leapOnSwipeGesture(SwipeGesture g, int state) {
 	default:
 		break;
 	}
-
 
 }

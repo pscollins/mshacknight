@@ -20,7 +20,7 @@ abstract class  AbstractSchemeManager<T extends AbstractScheme> {
 
 	void transition(boolean isRight) {
 		currentIndex += isRight ? 1 : -1;
-		currentIndex = currentIndex % schemes.size();
+		currentIndex = Math.abs(currentIndex % schemes.size());
 		println("new index: ", currentIndex);
 		currentScheme = schemes.get(currentIndex);
 		currentScheme.transition();
@@ -29,12 +29,35 @@ abstract class  AbstractSchemeManager<T extends AbstractScheme> {
 
 
 class ColorSchemeManager extends AbstractSchemeManager<ColorScheme> {
-	ColorSchemeManager() {
+	ColorSchemeManager(int pageWidth) {
 		super();
 		println("init color scheme");
 
-		schemes.add((new ColorScheme(color(255), color(50))));
-		schemes.add((new ColorScheme(color(50), color(255))));
+		color blue = color(51, 204, 255);
+		color grey = color(50, 50, 50, 150);
+
+		// WINDOWS 8 COLOR SCHEME
+
+		color taupe = color(135, 121, 78);
+		color red = color(229, 20, 0);
+		color green = color(0, 138, 0);
+		color magenta = color(216, 0, 115);
+		color steel = color(100, 118, 135);
+		color cobalt = color(0, 80, 239);
+
+		color semiSteel = color(100, 118, 135, 150);
+		color semiWhite = color(255, 255, 255, 200);
+		color semiBlack = color(0, 0, 0, 200);
+
+		schemes.add((new ColorScheme(cobalt, semiWhite)));
+		schemes.add((new ColorScheme(red,
+		                             semiWhite)));
+
+		SineWave toAdd = new SineWave(pageWidth);
+		for (ColorScheme scheme : schemes) {
+			scheme.addSteppable(toAdd);
+		}
+
 		currentScheme = schemes.get(currentIndex);
 	}
 }
@@ -71,13 +94,12 @@ class KeySchemeManager extends AbstractSchemeManager<KeyScheme> {
 class LazyKeySchemeManager extends AbstractSchemeManager<LazyKeyScheme> {
 	String[] paths = {
 		"/home/patrick/hacking/web/mshacknight/processing/main/audio-1/",
-		"/home/patrick/hacking/web/mshacknight/processing/main/audio-2"};
+		"/home/patrick/hacking/web/mshacknight/processing/main/daftpunk/"};
 	// 	"/home/patrick/hacking/web/mshacknight/processing/main/audio-3"
 	// };
 
 	Minim minim;
 	KeyLayout layout;
-
 
 	LazyKeySchemeManager(Minim _minim, KeyLayout _layout) {
 		super();
@@ -94,9 +116,6 @@ class LazyKeySchemeManager extends AbstractSchemeManager<LazyKeyScheme> {
 		// 		layout,
 		// 		minim)));
 
-		println("got #2");
-		println("schemes: ", schemes);
-		currentScheme = schemes.get(currentIndex);
 		println("set current scheme: ", currentScheme);
 	}
 
@@ -112,7 +131,7 @@ class LazyKeySchemeManager extends AbstractSchemeManager<LazyKeyScheme> {
 
 	void transition(boolean isRight) {
 		currentIndex += isRight ? 1 : -1;
-		currentIndex = currentIndex % schemes.size();
+		currentIndex = Math.abs(currentIndex % paths.length);
 
 		LazyKeyScheme oldScheme = currentScheme;
 
@@ -128,5 +147,4 @@ class LazyKeySchemeManager extends AbstractSchemeManager<LazyKeyScheme> {
 	void checkToPlay(PVector position, LoopManager loopManager) {
 		currentScheme.checkToPlay(position, loopManager);
 	}
-
 }
